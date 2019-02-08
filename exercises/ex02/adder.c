@@ -1,65 +1,51 @@
 /*
 Adder.c file written by Hyegi Bang for Software Systems class in Olin College
 of Enginnering. The following code allows the user to enter integers, one per
-line, until the user hits Control-D
+line, until the user hits Control-D.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
-#define SIZE 20
-#define MAXIT 4
-
-int str2int();
-void user_enter();
+/* Declare constant variable for array size*/
+static int buffersize = 5;
+static int arraysize = 5;
 
 int main(){
-  char number[MAXIT];
-  int numberarray[MAXIT];
-
   int sum = 0;
   int index = 0;
+  int intarray[arraysize];
 
-    do{
-      user_enter(number);
+  while(1){
+    char number[10];
+    puts("Enter a number");
+    /*Checks whether control+D is pressed */
+    if (fgets(number, buffersize, stdin) == NULL){
+      break;
+    }
 
-    // char *fgets(char *str, int n, FILE *stream)
-    if(fgets(number,11,stdin) != NULL){
-      if(strlen(number) > 10){
-        printf("Hello" );
-      }else {
-        if(index < MAXIT){
-          numberarray[index] = str2int(number);
-          index++;
-        }else{
-          printf("Exceed possible number of interation" );
-        }
-      }
+    /*Checks whether user inputted a value with greater buffersize */
+    if (number[strlen(number)-1] != '\n'){
+      printf("Error: Exceed Buffersize\n" );
+      break;
     }
-  } while(fgets(number,11,stdin) != NULL);
-    for(int i =0; i <= index; i++){
-      sum = sum + number[i];
-      printf("%i\n", sum);
+
+    /*Checks whether user inputted more than the arraysize */
+    if(index >= arraysize){
+      printf("Error: Exceed ArraySize\n");
+      break;
     }
-    printf("Sum is %i\n",sum );
-    return 0;
+
+    /*Converts string to an integer */
+    intarray[index] = atoi(number);
+    index ++;
+  }
+  /* Calculates the sum of the user input */
+  for (int i =0; i < index; i++){
+    sum = sum + intarray[i];
   }
 
-
-
-
-
-
-int str2int(char *s){
-  int val = atoi(s);
-  printf("Val is %i\n", val);
-  return val;
-
-}
-
-void user_enter(char *number){
-  puts("Enter a number");
-  scanf("%2s", number);
+  printf("Sum is %i\n",sum );
+  return 0;
 }
