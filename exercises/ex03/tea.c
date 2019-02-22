@@ -4,14 +4,15 @@
 
 int main(int argc,char *argv[])
 {
-  int i; 
+  int i;
   char c;
-  char intputbuffer[300];
+  int flag;
+  char intputbuffer[256];
   FILE *out;
 
-//Returns an error if the user does not enter a file name
+// Error message
     if (argc<1){
-     fprintf(stderr, "Enter Valid arguments\n");
+     fprintf(stderr, "Invalid input\n");
        return 1;
         exit(1);
     }
@@ -19,11 +20,9 @@ int main(int argc,char *argv[])
     while ((ch = getopt(argc, argv, "ai")) != -1){
   		switch((char)ch){
   		case 'a':
-  			append = 1;
+  			flag = 1;
   			break;
   		default:
-  		    printf("Enter a valid option");
-  		    return 1;
   		    exit(1);
   		}
   	}
@@ -32,25 +31,29 @@ int numFiles = argc - options - 1;
 int fileIndex = options+1;
 
 
-while (fgets(stdin,800,inputBuffer))
-{
-    while(numFiles>0)
-    {
-      if (append==0)
-      {
-        output = open(argv[fileIndex], "w");
-        rewind(output);
-      }
-      else
-      {
-          output = open(argv[fileIndex], "a");
-      }
-      printf("%s\n", inputBuffer);
-      frwite(inputBuffer,output);
-      fileIndex += 1;
-      numFiles-=1;
-      fclose(output);
-    }
+argc -= optind;
+argv += optind;
+
+	while(fgets(in, 256, stdin)) {
+		for (int i = 0; i < argc; j++) {
+			if (!flag) {
+				out = fopen(argv[i], "a");
+			}
+			else {
+				out = fopen(argv[i], "w");
+			}
+
+			fprintf(stdout, "%s", intputbuffer);
+			fputs(intputbuffer, out);
+			fclose(out);
+		}
 }
-    return 0;
+
+
+	return 0;
 }
+
+
+/*
+1. What worked, what slowed you down? What would you do differently next time?
+*/

@@ -12,8 +12,13 @@ License: GNU GPLv3
 
 int *foo() {
     int i;
+<<<<<<< HEAD
     static int array[SIZE]; // by making array a static variable, the variable remains
                             // in the diagram
+=======
+    int array[SIZE];
+
+>>>>>>> 12d0788dab1ae56a12243b954a7877e1d69b91ef
     printf("%p\n", array);
 
     for (i=0; i<SIZE; i++) {
