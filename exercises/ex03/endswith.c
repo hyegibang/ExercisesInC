@@ -27,9 +27,27 @@ returns: 1 if true, 0 otherwise
 */
 int endswith(char *s, char *suffix)
 {
-    // TODO: Fill this in!
-    return 0;
+  char* startPointer = strstr(s,suffix);
+  if (startPointer != NULL)
+  {
+      char* endofs = strlen(s) + s;
+      while (startPointer < endofs)
+      {
+          if (*startPointer == *suffix)
+          {
+               startPointer = startPointer + 1;
+               suffix += 1;
+          }
+          else
+          {
+              return 0;
+          }
+      }
+  return 1;
+  }
+  return 0;
 }
+
 
 
 /* test_endswith
