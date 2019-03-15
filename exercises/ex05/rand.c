@@ -8,7 +8,7 @@ License: MIT License https://opensource.org/licenses/MIT
 
 // generate a random float using the algorithm described
 // at http://allendowney.com/research/rand
-float my_random_float()
+float my_at()
 {
     int x, exp, mant;
     float f;
@@ -40,7 +40,7 @@ float my_random_float()
 
 // alternative implementation of my algorithm that doesn't use
 // embedded assembly
-float my_random_float2()
+float my_at2()
 {
     int x;
     int mant;
@@ -78,8 +78,37 @@ float my_random_float2()
 // compute a random double using my algorithm
 double my_random_double()
 {
-    // TODO: fill this in
-}
+    long x;
+    long mant;
+    long exp = 1022;
+    long mask = 1;
+
+    union {
+        double d;
+        long l;
+    } b;
+
+  // generate random bits in size of 63
+    while (1) {
+        x = random();
+        if (x == 0) {
+            exp -= 31;
+        } else {
+            break;
+        }
+    }
+
+    while (x & mask) {
+      mask <<= 1;
+      exp--;
+      }
+
+      // use the remaining bit as the mantissa
+      mant = x >> 11; //double has 11 bits of exponent
+      b.l = (exp << 52) | mant; // double has 52 bits
+
+      return b.d;
+    }
 
 // return a constant (this is a dummy function for time trials)
 float dummy()
