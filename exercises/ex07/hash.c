@@ -302,16 +302,15 @@ Node *prepend(Hashable *key, Value *value, Node *rest)
 /* Looks up a key and returns the corresponding value, or NULL */
 Value *list_lookup(Node *list, Hashable *key)
 {
-    if (list == NULL) {
-          return NULL;
+    while(list != NULL){
+    if (list->key == key) {
+        return list->value;
     }
-    else{
-        if (list->key == key) {
-            return list->value;
-        }
-        list = list->next;
-    }
+    list = list->next;
+  }
+  return NULL;
 }
+
 
 
 // MAP: a map is an array of lists of key-value pairs
