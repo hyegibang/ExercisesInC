@@ -308,7 +308,7 @@ Value *list_lookup(Node *list, Hashable *key)
     }
     list = list->next;
   }
-  return NULL;
+  return NULL;y
 }
 
 
