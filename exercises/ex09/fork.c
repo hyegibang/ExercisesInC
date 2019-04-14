@@ -19,6 +19,8 @@ License: MIT License https://opensource.org/licenses/MIT
 // error information
 extern int errno;
 
+int global_v = 1;
+int* heap_v;
 
 // get_seconds returns the number of seconds since the
 // beginning of the day, with microsecond precision
@@ -45,6 +47,11 @@ int main(int argc, char *argv[])
     pid_t pid;
     double start, stop;
     int i, num_children;
+
+    heap_v = (int*)malloc(1*sizeof(int));
+    *heap_v = 1;
+    int stack_v = 1;
+    static int static_v = 1;
 
     // the first command-line argument is the name of the executable.
     // if there is a second, it is the number of children to create.
@@ -73,6 +80,14 @@ int main(int argc, char *argv[])
         /* see if we're the parent or the child */
         if (pid == 0) {
             child_code(i);
+            (*heap_v)++;
+            printf("child heap: %d\n", *heap_v);
+            global_v++;
+            printf("child global: %d\n", global_v);
+            stack_v++;
+            printf("child stack: %d\n", stack_v);
+            static_v++;
+            printf("child static: %d\n", static_v);
             exit(i);
         }
     }
@@ -93,6 +108,13 @@ int main(int argc, char *argv[])
         status = WEXITSTATUS(status);
         printf("Child %d exited with error code %d.\n", pid, status);
     }
+
+   printf("parent: heap: %d\n", *heap_v);
+   printf("parent: global: %d\n", global_v);
+   printf("parent: stack: %d\n", stack_v);
+   printf("parent: static: %d\n", static_v);
+
+
     // compute the elapsed time
     stop = get_seconds();
     printf("Elapsed time = %f seconds.\n", stop - start);
