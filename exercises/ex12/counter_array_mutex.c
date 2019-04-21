@@ -3,6 +3,10 @@
 Copyright 2014 Allen Downey
 License: GNU GPLv3
 
+Q: How much overhead does the synchronization impose?
+
+Synchronization imposes significantly higher times than the code without
+mutual exclusion. 
 */
 
 #include <stdio.h>

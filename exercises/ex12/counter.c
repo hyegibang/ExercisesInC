@@ -3,13 +3,32 @@
 Copyright 2014 Allen Downey
 License: GNU GPLv3
 
+
+Question 3:
+When increase the NUM_CHILDREN to 10, the program results
+"counter = 0
+counter = 0
+counter = 1
+counter = 0
+counter = 0
+counter = 2
+counter = 4
+counter = 7
+counter = 8
+counter = 9
+Final value of counter is 10
+ "
+
+As a result, 0 is printed four times, which shows the concurrency of the threads.
+Conconcurrent thread often leads to synchronization errors as some functions
+might be called before or after the intended following or before functions
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 
-#define NUM_CHILDREN 5
+#define NUM_CHILDREN 10
 
 /* Print an error message and exit.
 */
