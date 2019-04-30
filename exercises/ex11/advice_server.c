@@ -1,11 +1,5 @@
 /* Code from Head First C.
 
-Modified by Tim Camper.
-
-Downloaded from https://github.com/twcamper/head-first-c/tree/master/11
-
-Modified by Allen Downey.
-
 */
 
 #include <stdio.h>
@@ -16,6 +10,7 @@ Modified by Allen Downey.
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 void error(char *msg)
 {
@@ -23,70 +18,56 @@ void error(char *msg)
     exit(1);
 }
 
-char *advice[] = {
-    "\nTake smaller bites.\r\n",
-    "\nOne word: inappropriate\r\n",
-    "\nI really couldn't advise you on such a matter!\r\n",
-    "\nJust for today, be honest: tell the boss what you *really* think.\r\n",
-    "\nYou might want to rethink that haircut.\r\n"
-};
-
-
-int main()
+int open_socket(char *host, char *port)
 {
-    // create the listening socket
-    int listener_d = socket(PF_INET, SOCK_STREAM, 0);
-    if (listener_d == -1)
-        error("socket failed.");
+    struct addrinfo *res;
+    struct addrinfo hints;
+    int d_sock, c;
 
-    struct sockaddr_in name;
-    name.sin_family = PF_INET;
-    name.sin_port = (in_port_t)htons(30000);
-    name.sin_addr.s_addr = htonl(INADDR_ANY);
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = PF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    if (getaddrinfo(host, port, &hints, &res) == -1)
+        error("Can't resolve the address");
+    if (( d_sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1)
+        error("Can't open socket");
 
-    // set socket options
-    int reuse = 1;
-    int res = setsockopt(listener_d,
-                   SOL_SOCKET,
-                   SO_REUSEADDR,
-                   (char *)&reuse,
-                   sizeof(int));
-    if (res == -1)
-        error("Can't set the 'reuse' option on the socket.");
+    c = connect(d_sock, res->ai_addr, res->ai_addrlen);
+    freeaddrinfo(res);
+    if (c == -1)
+        error("Can't connect to the socket");
 
-    // bind the socket to a port
-    res = bind(listener_d,  (struct sockaddr *) &name, sizeof(name));
-    if (res == -1)
-        error("Can't bind the port");
+    return d_sock;
+}
 
-    // Confusingly, `listen` just sets the socket to be
-    // a listening socket (and sets the queue length).
-    // It doesn't actually wait for connections (accept does that)
-    res = listen(listener_d, 10);
-    if (res == -1)
-        error("listen failed.");
+int say(int socket, char *s)
+{
+    int result = send(socket, s, strlen(s), 0);
+    if (result == -1)
+        error("Can't talk to the server");
 
+    return result;
+}
 
-    while (1) {
-        puts("waiting for a connection");
+int main(int argc, char *argv[])
+{
+    int d_sock, bytes_received;
+    char buf[255], rec[256];
 
-        // wait for a connection
-        struct sockaddr_storage client_addr;
-        unsigned int address_size = sizeof(client_addr);
+    /* connect to server */
+    d_sock = open_socket("en.wikipedia.org", "80");
 
-        int connect_d = accept(listener_d,
-                               (struct sockaddr *)&client_addr,
-                               &address_size);
+    /* display page on stdout in 255 byte chunks */
+    bytes_received = recv(d_sock, rec, 255, 0);
+    while (bytes_received) {
+        if (bytes_received == EOF)
+            error("can't read from server");
 
-        // when accept returns, connect_d is a
-        // new socket
-        char *msg = advice[rand() % 5 ];
-        res = send(connect_d, msg, strlen(msg), 0);
-        if (res == -1)
-            error("send failed.");
-
-        close(connect_d);
+        rec[bytes_received] = '\0';
+        printf("%s", rec);
+        bytes_received = recv(d_sock, rec, 255, 0);
     }
+    close(d_sock);
 
     return 0;
 }
